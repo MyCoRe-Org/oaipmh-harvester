@@ -61,21 +61,19 @@ public class JAXBHarvester implements Harvester {
     }
 
     @Override
-    public Identify identify() throws BadArgumentException {
+    public Identify identify() {
         DataProviderConnection dp = new DataProviderConnection(this.baseURL);
         OAIPMHtype oaipmh = unmarshall(dp.identify());
         JAXBConverter converter = new JAXBConverter(this.config);
         try {
             return converter.convertIdentify(oaipmh);
-        } catch (BadArgumentException e) {
-            throw e;
         } catch (OAIException e) {
             throw new RuntimeException("Unexcpected exception occur", e);
         }
     }
 
     @Override
-    public OAIDataList<Set> listSets() throws BadArgumentException, NoSetHierarchyException {
+    public OAIDataList<Set> listSets() throws NoSetHierarchyException {
         try {
             return this.listSets(null);
         } catch (BadResumptionTokenException exc) {
@@ -84,17 +82,15 @@ public class JAXBHarvester implements Harvester {
     }
 
     @Override
-    public OAIDataList<Set> listSets(String resumptionToken) throws BadArgumentException, NoSetHierarchyException,
+    public OAIDataList<Set> listSets(String resumptionToken) throws NoSetHierarchyException,
             BadResumptionTokenException {
         DataProviderConnection dp = new DataProviderConnection(this.baseURL);
         OAIPMHtype oaipmh = unmarshall(dp.listSets(resumptionToken));
         JAXBConverter converter = new JAXBConverter(this.config);
         try {
             return converter.convertListSets(oaipmh);
-        } catch (BadArgumentException e) {
-            // TODO: use java 7 catch
-            throw e;
         } catch (BadResumptionTokenException e) {
+            // TODO: use java 7 catch
             throw e;
         } catch (NoSetHierarchyException e) {
             throw e;
@@ -104,7 +100,7 @@ public class JAXBHarvester implements Harvester {
     }
 
     @Override
-    public List<MetadataFormat> listMetadataFormats() throws BadArgumentException {
+    public List<MetadataFormat> listMetadataFormats() {
         try {
             return this.listMetadataFormats(null);
         } catch (IdDoesNotExistException e) {
@@ -112,23 +108,19 @@ public class JAXBHarvester implements Harvester {
             throw new RuntimeException("Unexcpected exception occur", e);
         } catch (NoMetadataFormatsException e) {
             throw new RuntimeException("Unexcpected exception occur", e);
-        } catch (OAIException e) {
-            throw new RuntimeException("Unexcpected exception occur", e);
         }
     }
 
     @Override
-    public List<MetadataFormat> listMetadataFormats(String identifier) throws BadArgumentException, IdDoesNotExistException,
+    public List<MetadataFormat> listMetadataFormats(String identifier) throws IdDoesNotExistException,
             NoMetadataFormatsException {
         DataProviderConnection dp = new DataProviderConnection(this.baseURL);
         OAIPMHtype oaipmh = unmarshall(dp.listMetadataFormats(identifier));
         JAXBConverter converter = new JAXBConverter(this.config);
         try {
             return converter.convertListMetadataFormats(oaipmh);
-        } catch (BadArgumentException e) {
-            // TODO: use java 7 catch
-            throw e;
         } catch (IdDoesNotExistException e) {
+            // TODO: use java 7 catch
             throw e;
         } catch (NoMetadataFormatsException e) {
             throw e;
@@ -160,15 +152,12 @@ public class JAXBHarvester implements Harvester {
     }
 
     @Override
-    public OAIDataList<Header> listIdentifiers(String resumptionToken) throws BadArgumentException, BadResumptionTokenException {
+    public OAIDataList<Header> listIdentifiers(String resumptionToken) throws BadResumptionTokenException {
         DataProviderConnection dp = new DataProviderConnection(this.baseURL);
         OAIPMHtype oaipmh = unmarshall(dp.listIdentifiers(resumptionToken));
         JAXBConverter converter = new JAXBConverter(this.config);
         try {
             return converter.convertListIdentifiers(oaipmh);
-        } catch (BadArgumentException e) {
-            // TODO: use java 7 catch
-            throw e;
         } catch (BadResumptionTokenException e) {
             throw e;
         } catch (OAIException e) {
@@ -199,15 +188,12 @@ public class JAXBHarvester implements Harvester {
     }
 
     @Override
-    public OAIDataList<Record> listRecords(String resumptionToken) throws BadArgumentException, BadResumptionTokenException {
+    public OAIDataList<Record> listRecords(String resumptionToken) throws BadResumptionTokenException {
         DataProviderConnection dp = new DataProviderConnection(this.baseURL);
         OAIPMHtype oaipmh = unmarshall(dp.listRecords(resumptionToken));
         JAXBConverter converter = new JAXBConverter(this.config);
         try {
             return converter.convertListRecords(oaipmh);
-        } catch (BadArgumentException e) {
-            // TODO: use java 7 catch
-            throw e;
         } catch (BadResumptionTokenException e) {
             throw e;
         } catch (OAIException e) {
@@ -216,17 +202,15 @@ public class JAXBHarvester implements Harvester {
     }
 
     @Override
-    public Record getRecord(String identifier, String metadataPrefix) throws BadArgumentException, CannotDisseminateFormatException,
+    public Record getRecord(String identifier, String metadataPrefix) throws CannotDisseminateFormatException,
             IdDoesNotExistException {
         DataProviderConnection dp = new DataProviderConnection(this.baseURL);
         OAIPMHtype oaipmh = unmarshall(dp.getRecord(identifier, metadataPrefix));
         JAXBConverter converter = new JAXBConverter(this.config);
         try {
             return converter.convertGetRecord(oaipmh);
-        } catch (BadArgumentException e) {
-            // TODO: use java 7 catch
-            throw e;
         } catch (CannotDisseminateFormatException e) {
+            // TODO: use java 7 catch
             throw e;
         } catch (IdDoesNotExistException e) {
             throw e;

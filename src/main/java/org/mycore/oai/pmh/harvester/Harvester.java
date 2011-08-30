@@ -34,25 +34,21 @@ public interface Harvester {
      * Retrieve information about the repository.
      * 
      * @return Identify of the repository
-     * @throws BadArgumentException
-     *             The request includes illegal arguments.
      * @throws HTTPException
      *             The request leads to an HTTP error.
      */
-    public Identify identify() throws BadArgumentException, HTTPException;
+    public Identify identify() throws HTTPException;
 
     /**
      * Retrieve the set structure of the repository.
      * 
      * @return List of sets. If a resumption token is set, the list is incomplete.
-     * @throws BadArgumentException
-     *             The request includes illegal arguments.
      * @throws NoSetHierarchyException
      *             The repository does not support sets.
      * @throws HTTPException
      *             The request leads to an HTTP error.
      */
-    public OAIDataList<Set> listSets() throws BadArgumentException, NoSetHierarchyException, HTTPException;
+    public OAIDataList<Set> listSets() throws NoSetHierarchyException, HTTPException;
 
     /**
      * Retrieve the set structure of the repository.
@@ -60,8 +56,6 @@ public interface Harvester {
      * @param resumptionToken
      *            Flow control token returned by a previous ListSets request that issued an incomplete list
      * @return List of sets. If a resumption token is set, the list is incomplete.
-     * @throws BadArgumentException
-     *             The request includes illegal arguments.
      * @throws NoSetHierarchyException
      *             The repository does not support sets.
      * @throws BadResumptionTokenException
@@ -69,8 +63,7 @@ public interface Harvester {
      * @throws HTTPException
      *             The request leads to an HTTP error.
      */
-    public OAIDataList<Set> listSets(String resumptionToken) throws BadArgumentException, NoSetHierarchyException,
-            BadResumptionTokenException, HTTPException;
+    public OAIDataList<Set> listSets(String resumptionToken) throws NoSetHierarchyException, BadResumptionTokenException, HTTPException;
 
     /**
      * Retrieve the metadata formats available from the repository.
@@ -79,7 +72,7 @@ public interface Harvester {
      * @throws HTTPException
      *             The request leads to an HTTP error.
      */
-    public List<MetadataFormat> listMetadataFormats() throws BadArgumentException, HTTPException;
+    public List<MetadataFormat> listMetadataFormats() throws HTTPException;
 
     /**
      * Retrieve the metadata formats available from the repository for a specific item.
@@ -88,8 +81,6 @@ public interface Harvester {
      *            Specifies the unique identifier of the item for which available metadata formats are being requested. The returning list includes all metadata
      *            formats supported by the repository.
      * @return list of metadata formats
-     * @throws BadArgumentException
-     *             The request includes illegal arguments.
      * @throws IdDoesNotExistException
      *             The value of the identifier argument is unknown or illegal in the repository.
      * @throws NoMetadataFormatsException
@@ -97,8 +88,8 @@ public interface Harvester {
      * @throws HTTPException
      *             The request leads to an HTTP error.
      */
-    public List<MetadataFormat> listMetadataFormats(String identifier) throws BadArgumentException, IdDoesNotExistException,
-            NoMetadataFormatsException, HTTPException;
+    public List<MetadataFormat> listMetadataFormats(String identifier) throws IdDoesNotExistException, NoMetadataFormatsException,
+            HTTPException;
 
     /**
      * Retrieve a bunch of headers. In difference to listRecords no metadata is contained.
@@ -135,14 +126,12 @@ public interface Harvester {
      * @param resumptionToken
      *            Flow control token returned by a previous ListIdentifiers request that issued an incomplete list
      * @return List of headers. If a resumption token is set, the list is incomplete.
-     * @throws BadArgumentException
-     *             The request includes illegal arguments.
      * @throws BadResumptionTokenException
      *             The value of the resumptionToken argument is invalid or expired.
      * @throws HTTPException
      *             The request leads to an HTTP error.
      */
-    public OAIDataList<Header> listIdentifiers(String resumptionToken) throws BadArgumentException, BadResumptionTokenException,
+    public OAIDataList<Header> listIdentifiers(String resumptionToken) throws BadResumptionTokenException,
             HTTPException;
 
     /**
@@ -180,14 +169,12 @@ public interface Harvester {
      * @param resumptionToken
      *            Flow control token returned by a previous ListRecords request that issued an incomplete list
      * @return List of records. If a resumption token is set, the list is incomplete.
-     * @throws BadArgumentException
-     *             The request includes illegal arguments.
      * @throws BadResumptionTokenException
      *             The value of the resumptionToken argument is invalid or expired.
      * @throws HTTPException
      *             The request leads to an HTTP error.
      */
-    public OAIDataList<Record> listRecords(String resumptionToken) throws BadArgumentException, BadResumptionTokenException, HTTPException;
+    public OAIDataList<Record> listRecords(String resumptionToken) throws BadResumptionTokenException, HTTPException;
 
     /**
      * Retrieve an individual metadata record from the repository.
@@ -199,8 +186,6 @@ public interface Harvester {
      *            returned if the format specified by the metadataPrefix can be disseminated from the item identified by the value of the identifier argument.
      *            The metadata formats supported by a repository and for a particular record can be retrieved using the {@link #listMetadataFormats} method.
      * @return a record
-     * @throws BadArgumentException
-     *             The request includes illegal arguments or is missing required arguments.
      * @throws CannotDisseminateFormatException
      *             The value of the metadataPrefix argument is not supported by the item identified by the value of the identifier argument.
      * @throws IdDoesNotExistException
@@ -208,7 +193,7 @@ public interface Harvester {
      * @throws HTTPException
      *             The request leads to an HTTP error.
      */
-    public Record getRecord(String identifier, String metadataPrefix) throws BadArgumentException, CannotDisseminateFormatException,
+    public Record getRecord(String identifier, String metadataPrefix) throws CannotDisseminateFormatException,
             IdDoesNotExistException, HTTPException;
 
 }
