@@ -10,7 +10,7 @@
   <name>oaipmh-harvester</name>
 
   <properties>
-    <java.target.version>1.7</java.target.version>
+    <java.target.version>1.6</java.target.version>
   </properties>
 
   <scm>
