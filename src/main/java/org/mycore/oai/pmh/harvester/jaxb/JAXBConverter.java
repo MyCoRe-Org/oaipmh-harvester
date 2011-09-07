@@ -201,7 +201,9 @@ public class JAXBConverter {
         Record record = new Record(header);
         if(recordType.getMetadata() != null) {
             Element domElement = (Element)recordType.getMetadata().getAny();
-            record.setMetadata(new SimpleMetadata(OAIUtils.domToJDOM(domElement)));
+            if(domElement != null) {
+                record.setMetadata(new SimpleMetadata(OAIUtils.domToJDOM(domElement)));
+            }
         }
         for(AboutType aboutType : recordType.getAbout()) {
             Element domElement = (Element)aboutType.getAny();
