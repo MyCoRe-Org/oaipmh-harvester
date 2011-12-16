@@ -23,7 +23,7 @@ import org.mycore.oai.pmh.Set;
  * A harvester is a client application that issues OAI-PMH requests. A harvester is operated by a service provider as a means of collecting metadata from <a
  * href="http://www.openarchives.org/OAI/openarchivesprotocol.html#Repository">repositories</a>.
  * </p>
- * You should call {@link HarvesterBuilder#createNewInstance(baseURL)} to create a construct a new instance. With this instance you can call any valid OAI-PMH
+ * You should call {@link HarvesterBuilder#createNewInstance(baseURL)} to construct a new instance. With this instance you can do any valid OAI-PMH
  * requests like {@link #identify()} or {@link #listMetadataFormats()}.
  * 
  * @author Matthias Eichner
