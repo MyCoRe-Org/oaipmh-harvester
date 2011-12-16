@@ -87,6 +87,7 @@
       <plugin>
         <groupId>org.jvnet.jaxb2.maven2</groupId>
         <artifactId>maven-jaxb2-plugin</artifactId>
+        <version>0.8.0</version>
         <configuration>
           <schemaDirectory>${basedir}/src/main/resources/META-INF/schema</schemaDirectory>
           <bindingDirectory>${basedir}/src/main/resources/META-INF/xjb</bindingDirectory>
