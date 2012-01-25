@@ -1,5 +1,6 @@
 package org.mycore.oai.pmh.harvester.jaxb;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
@@ -57,6 +58,12 @@ public class JAXBHarvester implements Harvester {
         } catch (JAXBException jaxbExc) {
             LOGGER.error("while unmarshalling inputstream", jaxbExc);
             throw new RuntimeException("TODO: use better rt exception");
+        } finally {
+            try {
+                is.close();
+            } catch(IOException ioExc) {
+                LOGGER.error("while unmarshalling inputstream", ioExc);
+            }
         }
     }
 

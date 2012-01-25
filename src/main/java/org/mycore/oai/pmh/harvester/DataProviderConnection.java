@@ -119,7 +119,7 @@ public class DataProviderConnection {
             requestURL = new URL(requestString);
             LOGGER.info("Request " + requestURL.toString());
         } catch (Exception exc) {
-            throw new RuntimeException("TODO: throw better exception here");
+            throw new RuntimeException("TODO: throw better exception here", exc);
         }
         // open connection
         HttpURLConnection con;
