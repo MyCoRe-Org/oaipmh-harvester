@@ -10,7 +10,7 @@
   <name>oaipmh-harvester</name>
 
   <properties>
-    <java.target.version>1.6</java.target.version>
+    <java.target.version>1.7</java.target.version>
   </properties>
 
   <scm>
@@ -38,7 +38,6 @@
     </repository>
   </repositories>
 
-
   <build>
     <!-- lifecycle mapping for m2eclipse @see http://wiki.eclipse.org/M2E_plugin_execution_not_covered -->
     <pluginManagement>
@@ -63,19 +62,6 @@
                     <execute />
                   </action>
                 </pluginExecution>
-                <!-- <pluginExecution>
-                  <pluginExecutionFilter>
-                    <groupId>org.codehaus.mojo</groupId>
-                    <artifactId>build-helper-maven-plugin</artifactId>
-                    <versionRange>[1.5,)</versionRange>
-                    <goals>
-                      <goal>add-source</goal>
-                    </goals>
-                  </pluginExecutionFilter>
-                  <action>
-                    <execute />
-                  </action>
-                </pluginExecution>-->
               </pluginExecutions>
             </lifecycleMappingMetadata>
           </configuration>
@@ -119,6 +105,20 @@
           </execution>
         </executions>
       </plugin>
+      <!-- Generate *-source.jar -->
+      <plugin>
+        <artifactId>maven-source-plugin</artifactId>
+          <executions>
+            <execution>
+              <id>attach-sources</id>
+              <phase>verify</phase>
+              <goals>
+                <goal>jar-no-fork</goal>
+                <goal>test-jar-no-fork</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
     </plugins>
   </build>
 
