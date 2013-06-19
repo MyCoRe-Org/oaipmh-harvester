@@ -96,10 +96,7 @@ public class JAXBHarvester implements Harvester {
         JAXBConverter converter = new JAXBConverter(this.config);
         try {
             return converter.convertListSets(oaipmh);
-        } catch (BadResumptionTokenException e) {
-            // TODO: use java 7 catch
-            throw e;
-        } catch (NoSetHierarchyException e) {
+        } catch (BadResumptionTokenException | NoSetHierarchyException e) {
             throw e;
         } catch (OAIException e) {
             throw new RuntimeException("Unexcpected exception occur", e);
@@ -110,10 +107,7 @@ public class JAXBHarvester implements Harvester {
     public List<MetadataFormat> listMetadataFormats() {
         try {
             return this.listMetadataFormats(null);
-        } catch (IdDoesNotExistException e) {
-            // TODO: use java 7 catch
-            throw new RuntimeException("Unexcpected exception occur", e);
-        } catch (NoMetadataFormatsException e) {
+        } catch (IdDoesNotExistException | NoMetadataFormatsException e) {
             throw new RuntimeException("Unexcpected exception occur", e);
         }
     }
@@ -126,10 +120,7 @@ public class JAXBHarvester implements Harvester {
         JAXBConverter converter = new JAXBConverter(this.config);
         try {
             return converter.convertListMetadataFormats(oaipmh);
-        } catch (IdDoesNotExistException e) {
-            // TODO: use java 7 catch
-            throw e;
-        } catch (NoMetadataFormatsException e) {
+        } catch (IdDoesNotExistException | NoMetadataFormatsException e) {
             throw e;
         } catch (OAIException e) {
             throw new RuntimeException("Unexcpected exception occur", e);
@@ -144,14 +135,7 @@ public class JAXBHarvester implements Harvester {
         JAXBConverter converter = new JAXBConverter(this.config);
         try {
             return converter.convertListIdentifiers(oaipmh);
-        } catch (BadArgumentException e) {
-            // TODO: use java 7 catch
-            throw e;
-        } catch (CannotDisseminateFormatException e) {
-            throw e;
-        } catch (NoRecordsMatchException e) {
-            throw e;
-        } catch (NoSetHierarchyException e) {
+        } catch (BadArgumentException | CannotDisseminateFormatException | NoRecordsMatchException | NoSetHierarchyException e) {
             throw e;
         } catch (OAIException e) {
             throw new RuntimeException("Unexcpected exception occur", e);
@@ -180,14 +164,7 @@ public class JAXBHarvester implements Harvester {
         JAXBConverter converter = new JAXBConverter(this.config);
         try {
             return converter.convertListRecords(oaipmh);
-        } catch (BadArgumentException e) {
-            // TODO: use java 7 catch
-            throw e;
-        } catch (CannotDisseminateFormatException e) {
-            throw e;
-        } catch (NoRecordsMatchException e) {
-            throw e;
-        } catch (NoSetHierarchyException e) {
+        } catch (BadArgumentException | CannotDisseminateFormatException | NoRecordsMatchException | NoSetHierarchyException e) {
             throw e;
         } catch (OAIException e) {
             throw new RuntimeException("Unexcpected exception occur", e);
@@ -216,10 +193,7 @@ public class JAXBHarvester implements Harvester {
         JAXBConverter converter = new JAXBConverter(this.config);
         try {
             return converter.convertGetRecord(oaipmh);
-        } catch (CannotDisseminateFormatException e) {
-            // TODO: use java 7 catch
-            throw e;
-        } catch (IdDoesNotExistException e) {
+        } catch (CannotDisseminateFormatException | IdDoesNotExistException e) {
             throw e;
         } catch (OAIException e) {
             throw new RuntimeException("Unexcpected exception occur", e);
