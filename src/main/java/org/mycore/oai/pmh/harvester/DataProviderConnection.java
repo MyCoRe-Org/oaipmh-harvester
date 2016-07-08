@@ -10,7 +10,7 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.InflaterInputStream;
 import java.util.zip.ZipInputStream;
 
-import javax.xml.ws.http.HTTPException;
+import javax.net.ssl.HttpsURLConnection;
 
 import org.apache.log4j.Logger;
 import org.mycore.oai.pmh.Argument;
@@ -35,27 +35,27 @@ public class DataProviderConnection {
         this.baseURL = baseURL;
     }
 
-    public InputStream identify() throws HTTPException {
+    public InputStream identify() {
         String requestURL = baseURL;
         requestURL = addParameter(requestURL, Argument.verb, Verb.Identify.name());
         return doRequest(requestURL);
     }
 
-    public InputStream listSets(String resumptionToken) throws HTTPException {
+    public InputStream listSets(String resumptionToken) {
         String requestURL = baseURL;
         requestURL = addParameter(requestURL, Argument.verb, Verb.ListSets.name());
         requestURL = addParameter(requestURL, Argument.resumptionToken, resumptionToken);
         return doRequest(requestURL);
     }
 
-    public InputStream listMetadataFormats(String identifier) throws HTTPException {
+    public InputStream listMetadataFormats(String identifier) {
         String requestURL = baseURL;
         requestURL = addParameter(requestURL, Argument.verb, Verb.ListMetadataFormats.name());
         requestURL = addParameter(requestURL, Argument.identifier, identifier);
         return doRequest(requestURL);
     }
 
-    public InputStream listIdentifiers(String metadataPrefix, String from, String until, String setSpec) throws HTTPException {
+    public InputStream listIdentifiers(String metadataPrefix, String from, String until, String setSpec) {
         if (metadataPrefix == null) {
             throw new IllegalArgumentException("metadataPrefix is null");
         }
@@ -68,7 +68,7 @@ public class DataProviderConnection {
         return doRequest(requestURL);
     }
 
-    public InputStream listIdentifiers(String resumptionToken) throws HTTPException {
+    public InputStream listIdentifiers(String resumptionToken) {
         if (resumptionToken == null) {
             throw new IllegalArgumentException("resumptionToken is null");
         }
@@ -78,7 +78,7 @@ public class DataProviderConnection {
         return doRequest(requestURL);
     }
 
-    public InputStream listRecords(String metadataPrefix, String from, String until, String setSpec) throws HTTPException {
+    public InputStream listRecords(String metadataPrefix, String from, String until, String setSpec) {
         if (metadataPrefix == null) {
             throw new IllegalArgumentException("metadataPrefix is null");
         }
@@ -91,7 +91,7 @@ public class DataProviderConnection {
         return doRequest(requestURL);
     }
 
-    public InputStream listRecords(String resumptionToken) throws HTTPException {
+    public InputStream listRecords(String resumptionToken) {
         if (resumptionToken == null) {
             throw new IllegalArgumentException("resumptionToken is null");
         }
@@ -101,7 +101,7 @@ public class DataProviderConnection {
         return doRequest(requestURL);
     }
 
-    public InputStream getRecord(String identifier, String metadataPrefix) throws HTTPException {
+    public InputStream getRecord(String identifier, String metadataPrefix) {
         if (identifier == null || metadataPrefix == null) {
             throw new IllegalArgumentException("identifier or metadataPrefix is null");
         }
@@ -112,36 +112,18 @@ public class DataProviderConnection {
         return doRequest(requestURL);
     }
 
-    protected InputStream doRequest(String requestString) throws HTTPException {
+    protected InputStream doRequest(String requestString) {
         // build request url
         URL requestURL;
         try {
             requestURL = new URL(requestString);
             LOGGER.info("Request " + requestURL.toString());
         } catch (Exception exc) {
-            throw new RuntimeException("TODO: throw better exception here", exc);
+            throw new HarvestException("Unable to request " + requestString, exc);
         }
         // open connection
-        HttpURLConnection con;
-        try {
-            con = (HttpURLConnection) requestURL.openConnection();
-            // set request properties
-            con.setRequestProperty("User-Agent", "OAIHarvester/2.0");
-            StringBuffer encodingBuf = new StringBuffer();
-            for (int i = 0; i < Encoding.values().length; i++) {
-                encodingBuf.append(Encoding.values()[i]);
-                if (i < Encoding.values().length)
-                    encodingBuf.append(", ");
-            }
-            con.setRequestProperty("Accept-Encoding", encodingBuf.toString());
-            // get response code
-            int responseCode = con.getResponseCode();
-            if (responseCode != HttpURLConnection.HTTP_OK) {
-                throw new HTTPException(responseCode);
-            }
-        } catch (IOException ioExc) {
-            throw new HTTPException(HttpURLConnection.HTTP_UNAVAILABLE);
-        }
+        HttpURLConnection con = doRequest(requestURL);
+
         // get content
         String contentEncoding = con.getHeaderField("Content-Encoding");
         try {
@@ -158,8 +140,33 @@ public class DataProviderConnection {
                 return in;
             }
         } catch (IOException ioExc) {
-            throw new HTTPException(HttpURLConnection.HTTP_INTERNAL_ERROR);
+            throw new HarvestException("Unable to decode content for " + requestString, ioExc);
         }
+    }
+
+    private HttpURLConnection doRequest(URL requestURL) {
+        HttpURLConnection con;
+        try {
+            con = (HttpsURLConnection) requestURL.openConnection();
+            // set request properties
+            con.setRequestProperty("User-Agent", "OAIHarvester/2.0");
+            StringBuffer encodingBuf = new StringBuffer();
+            for (int i = 0; i < Encoding.values().length; i++) {
+                encodingBuf.append(Encoding.values()[i]);
+                if (i < Encoding.values().length)
+                    encodingBuf.append(", ");
+            }
+            con.setRequestProperty("Accept-Encoding", encodingBuf.toString());
+            // get response code
+            int responseCode = con.getResponseCode();
+            if (responseCode != HttpURLConnection.HTTP_OK) {
+                throw new HarvestException("HTTP connection error " + con.getResponseCode() + " "
+                    + con.getResponseMessage() + " for " + requestURL.toString());
+            }
+        } catch (IOException ioExc) {
+            throw new HarvestException("Unable to open connect for " + requestURL.toString(), ioExc);
+        }
+        return con;
     }
 
     protected String addParameter(String URL, Argument arg, String value) {

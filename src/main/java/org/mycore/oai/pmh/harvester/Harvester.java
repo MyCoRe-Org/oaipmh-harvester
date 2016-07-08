@@ -2,8 +2,6 @@ package org.mycore.oai.pmh.harvester;
 
 import java.util.List;
 
-import javax.xml.ws.http.HTTPException;
-
 import org.mycore.oai.pmh.BadArgumentException;
 import org.mycore.oai.pmh.BadResumptionTokenException;
 import org.mycore.oai.pmh.CannotDisseminateFormatException;
@@ -34,10 +32,10 @@ public interface Harvester {
      * Retrieve information about the repository.
      * 
      * @return Identify of the repository
-     * @throws HTTPException
-     *             The request leads to an HTTP error.
+     * @throws HarvestException
+     *             General exception that something went wrong. Most likely an HTTP error occurred.
      */
-    public Identify identify() throws HTTPException;
+    public Identify identify() throws HarvestException;
 
     /**
      * Retrieve the set structure of the repository.
@@ -45,10 +43,10 @@ public interface Harvester {
      * @return List of sets. If a resumption token is set, the list is incomplete.
      * @throws NoSetHierarchyException
      *             The repository does not support sets.
-     * @throws HTTPException
-     *             The request leads to an HTTP error.
+     * @throws HarvestException
+     *             General exception that something went wrong. Most likely an HTTP error occurred.
      */
-    public OAIDataList<Set> listSets() throws NoSetHierarchyException, HTTPException;
+    public OAIDataList<Set> listSets() throws NoSetHierarchyException, HarvestException;
 
     /**
      * Retrieve the set structure of the repository.
@@ -60,19 +58,19 @@ public interface Harvester {
      *             The repository does not support sets.
      * @throws BadResumptionTokenException
      *             The value of the resumptionToken argument is invalid or expired.
-     * @throws HTTPException
-     *             The request leads to an HTTP error.
+     * @throws HarvestException
+     *             General exception that something went wrong. Most likely an HTTP error occurred.
      */
-    public OAIDataList<Set> listSets(String resumptionToken) throws NoSetHierarchyException, BadResumptionTokenException, HTTPException;
+    public OAIDataList<Set> listSets(String resumptionToken) throws NoSetHierarchyException, BadResumptionTokenException, HarvestException;
 
     /**
      * Retrieve the metadata formats available from the repository.
      * 
      * @return list of metadata formats
-     * @throws HTTPException
-     *             The request leads to an HTTP error.
+     * @throws HarvestException
+     *             General exception that something went wrong. Most likely an HTTP error occurred.
      */
-    public List<MetadataFormat> listMetadataFormats() throws HTTPException;
+    public List<MetadataFormat> listMetadataFormats() throws HarvestException;
 
     /**
      * Retrieve the metadata formats available from the repository for a specific item.
@@ -85,11 +83,11 @@ public interface Harvester {
      *             The value of the identifier argument is unknown or illegal in the repository.
      * @throws NoMetadataFormatsException
      *             There are no metadata formats available for the specified item.
-     * @throws HTTPException
-     *             The request leads to an HTTP error.
+     * @throws HarvestException
+     *             General exception that something went wrong. Most likely an HTTP error occurred.
      */
     public List<MetadataFormat> listMetadataFormats(String identifier) throws IdDoesNotExistException, NoMetadataFormatsException,
-            HTTPException;
+    HarvestException;
 
     /**
      * Retrieve a bunch of headers. In difference to listRecords no metadata is contained.
@@ -114,11 +112,11 @@ public interface Harvester {
      *             The combination of the values of the from, until, and set arguments results in an empty list.
      * @throws NoSetHierarchyException
      *             The repository does not support sets.
-     * @throws HTTPException
-     *             The request leads to an HTTP error.
+     * @throws HarvestException
+     *             General exception that something went wrong. Most likely an HTTP error occurred.
      */
     public OAIDataList<Header> listIdentifiers(String metadataPrefix, String from, String until, String setSpec)
-            throws BadArgumentException, CannotDisseminateFormatException, NoRecordsMatchException, NoSetHierarchyException, HTTPException;
+            throws BadArgumentException, CannotDisseminateFormatException, NoRecordsMatchException, NoSetHierarchyException, HarvestException;
 
     /**
      * Retrieve a bunch of headers. In difference to listRecords no metadata is contained.
@@ -128,11 +126,11 @@ public interface Harvester {
      * @return List of headers. If a resumption token is set, the list is incomplete.
      * @throws BadResumptionTokenException
      *             The value of the resumptionToken argument is invalid or expired.
-     * @throws HTTPException
-     *             The request leads to an HTTP error.
+     * @throws HarvestException
+     *             General exception that something went wrong. Most likely an HTTP error occurred.
      */
     public OAIDataList<Header> listIdentifiers(String resumptionToken) throws BadResumptionTokenException,
-            HTTPException;
+    HarvestException;
 
     /**
      * Retrieve a bunch of records.
@@ -157,11 +155,11 @@ public interface Harvester {
      *             The combination of the values of the from, until, and set arguments results in an empty list.
      * @throws NoSetHierarchyException
      *             The repository does not support sets.
-     * @throws HTTPException
-     *             The request leads to an HTTP error.
+     * @throws HarvestException
+     *             General exception that something went wrong. Most likely an HTTP error occurred.
      */
     public OAIDataList<Record> listRecords(String metadataPrefix, String from, String until, String setSpec) throws BadArgumentException,
-            CannotDisseminateFormatException, NoRecordsMatchException, NoSetHierarchyException, HTTPException;
+            CannotDisseminateFormatException, NoRecordsMatchException, NoSetHierarchyException, HarvestException;
 
     /**
      * Retrieve a bunch of records.
@@ -171,10 +169,10 @@ public interface Harvester {
      * @return List of records. If a resumption token is set, the list is incomplete.
      * @throws BadResumptionTokenException
      *             The value of the resumptionToken argument is invalid or expired.
-     * @throws HTTPException
-     *             The request leads to an HTTP error.
+     * @throws HarvestException
+     *             General exception that something went wrong. Most likely an HTTP error occurred.
      */
-    public OAIDataList<Record> listRecords(String resumptionToken) throws BadResumptionTokenException, HTTPException;
+    public OAIDataList<Record> listRecords(String resumptionToken) throws BadResumptionTokenException, HarvestException;
 
     /**
      * Retrieve an individual metadata record from the repository.
@@ -190,10 +188,10 @@ public interface Harvester {
      *             The value of the metadataPrefix argument is not supported by the item identified by the value of the identifier argument.
      * @throws IdDoesNotExistException
      *             The value of the identifier argument is unknown or illegal in this repository.
-     * @throws HTTPException
-     *             The request leads to an HTTP error.
+     * @throws HarvestException
+     *             General exception that something went wrong. Most likely an HTTP error occurred.
      */
     public Record getRecord(String identifier, String metadataPrefix) throws CannotDisseminateFormatException,
-            IdDoesNotExistException, HTTPException;
+            IdDoesNotExistException, HarvestException;
 
 }
