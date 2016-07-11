@@ -10,8 +10,6 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.InflaterInputStream;
 import java.util.zip.ZipInputStream;
 
-import javax.net.ssl.HttpsURLConnection;
-
 import org.apache.log4j.Logger;
 import org.mycore.oai.pmh.Argument;
 import org.mycore.oai.pmh.Verb;
@@ -112,19 +110,36 @@ public class DataProviderConnection {
         return doRequest(requestURL);
     }
 
-    protected InputStream doRequest(String requestString) {
-        // build request url
-        URL requestURL;
+    protected InputStream doRequest(String requestString) throws HarvestException {
+        URL requestURL = buildRequestURL(requestString);
+        // open connection
+        HttpURLConnection con = null;
         try {
-            requestURL = new URL(requestString);
-            LOGGER.info("Request " + requestURL.toString());
+            con = (HttpURLConnection) requestURL.openConnection();
+            setRequestProperties(requestURL, con);
+            // get response code
+            int responseCode = con.getResponseCode();
+            if (responseCode != HttpURLConnection.HTTP_OK) {
+                throw new HarvestException("HTTP connection error " + con.getResponseCode() + " "
+                    + con.getResponseMessage() + " for " + requestURL.toString());
+            }
+            // get content
+            return getContent(con);
+        } catch(IOException ioExc) {
+            throw new HarvestException("Unable to handle connection " + requestURL.toString(), ioExc);
+        }
+    }
+
+    private URL buildRequestURL(String requestString) {
+        try {
+            LOGGER.info("Request " + requestString);
+            return new URL(requestString);
         } catch (Exception exc) {
             throw new HarvestException("Unable to request " + requestString, exc);
         }
-        // open connection
-        HttpURLConnection con = doRequest(requestURL);
+    }
 
-        // get content
+    private InputStream getContent(HttpURLConnection con) {
         String contentEncoding = con.getHeaderField("Content-Encoding");
         try {
             InputStream in = con.getInputStream();
@@ -140,33 +155,20 @@ public class DataProviderConnection {
                 return in;
             }
         } catch (IOException ioExc) {
-            throw new HarvestException("Unable to decode content for " + requestString, ioExc);
+            throw new HarvestException("Unable to decode content for " + con.getURL().toString(), ioExc);
         }
     }
 
-    private HttpURLConnection doRequest(URL requestURL) {
-        HttpURLConnection con;
-        try {
-            con = (HttpsURLConnection) requestURL.openConnection();
-            // set request properties
-            con.setRequestProperty("User-Agent", "OAIHarvester/2.0");
-            StringBuffer encodingBuf = new StringBuffer();
-            for (int i = 0; i < Encoding.values().length; i++) {
-                encodingBuf.append(Encoding.values()[i]);
-                if (i < Encoding.values().length)
-                    encodingBuf.append(", ");
-            }
-            con.setRequestProperty("Accept-Encoding", encodingBuf.toString());
-            // get response code
-            int responseCode = con.getResponseCode();
-            if (responseCode != HttpURLConnection.HTTP_OK) {
-                throw new HarvestException("HTTP connection error " + con.getResponseCode() + " "
-                    + con.getResponseMessage() + " for " + requestURL.toString());
-            }
-        } catch (IOException ioExc) {
-            throw new HarvestException("Unable to open connect for " + requestURL.toString(), ioExc);
+    private void setRequestProperties(URL requestURL, HttpURLConnection con) {
+        // set request properties
+        con.setRequestProperty("User-Agent", "OAIHarvester/2.0");
+        StringBuffer encodingBuf = new StringBuffer();
+        for (int i = 0; i < Encoding.values().length; i++) {
+            encodingBuf.append(Encoding.values()[i]);
+            if (i < Encoding.values().length)
+                encodingBuf.append(", ");
         }
-        return con;
+        con.setRequestProperty("Accept-Encoding", encodingBuf.toString());
     }
 
     protected String addParameter(String URL, Argument arg, String value) {
