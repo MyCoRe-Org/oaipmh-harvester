@@ -9,7 +9,8 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.mycore.oai.pmh.BadArgumentException;
 import org.mycore.oai.pmh.BadResumptionTokenException;
 import org.mycore.oai.pmh.CannotDisseminateFormatException;
@@ -36,7 +37,7 @@ import org.openarchives.oai.pmh.OAIPMHtype;
  */
 public class JAXBHarvester implements Harvester {
 
-    private static Logger LOGGER = Logger.getLogger(JAXBHarvester.class);
+    private static Logger LOGGER = LogManager.getLogger(JAXBHarvester.class);
 
     private String baseURL;
 

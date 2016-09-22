@@ -3,6 +3,8 @@ package org.mycore.oai.pmh.harvester.jaxb;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.mycore.oai.pmh.BadArgumentException;
 import org.mycore.oai.pmh.BadResumptionTokenException;
 import org.mycore.oai.pmh.BadVerbException;
@@ -48,6 +50,8 @@ import org.w3c.dom.Element;
 
 public class JAXBConverter {
 
+    private static Logger LOGGER = LogManager.getLogger(JAXBConverter.class);
+
     private HarvesterConfig config;
 
     public JAXBConverter(HarvesterConfig config) {
@@ -86,7 +90,7 @@ public class JAXBConverter {
         // first handle possible exception
         handleOAIException(oaipmh);
         IdentifyType idType = oaipmh.getIdentify();
-        if(idType == null) {
+        if (idType == null) {
             throw new RuntimeException("Identify is empty");
         }
         // create new identify
@@ -97,7 +101,7 @@ public class JAXBConverter {
         id.setGranularity(Granularity.valueOf(idType.getGranularity().name()));
         id.setProtocolVersion(idType.getProtocolVersion());
         id.setRepositoryName(idType.getRepositoryName());
-        for(String mail : idType.getAdminEmail()) {
+        for (String mail : idType.getAdminEmail()) {
             id.getAdminEmailList().add(mail);
         }
         // add descriptions
@@ -109,12 +113,12 @@ public class JAXBConverter {
         // first handle possible exception
         handleOAIException(oaipmh);
         ListSetsType listSetsType = oaipmh.getListSets();
-        if(listSetsType == null) {
+        if (listSetsType == null) {
             throw new RuntimeException("ListSets is empty");
         }
         // create new list sets
         OAIDataList<Set> setList = new OAIDataList<Set>();
-        for(SetType setType : listSetsType.getSet()) {
+        for (SetType setType : listSetsType.getSet()) {
             Set set = new Set(setType.getSetSpec(), setType.getSetName());
             set.getDescription().addAll(convertDescriptionList(setType.getSetDescription()));
             setList.add(set);
@@ -128,13 +132,14 @@ public class JAXBConverter {
         // first handle possible exception
         handleOAIException(oaipmh);
         ListMetadataFormatsType listMetadataFormatsType = oaipmh.getListMetadataFormats();
-        if(listMetadataFormatsType == null) {
+        if (listMetadataFormatsType == null) {
             throw new RuntimeException("ListMetadataFormats is empty");
         }
         // create new list metadata formats
         List<MetadataFormat> metadataFormatList = new ArrayList<MetadataFormat>();
-        for(MetadataFormatType mft : listMetadataFormatsType.getMetadataFormat()) {
-            MetadataFormat mf = new MetadataFormat(mft.getMetadataPrefix(), mft.getMetadataNamespace(), mft.getSchema());
+        for (MetadataFormatType mft : listMetadataFormatsType.getMetadataFormat()) {
+            MetadataFormat mf = new MetadataFormat(mft.getMetadataPrefix(), mft.getMetadataNamespace(),
+                mft.getSchema());
             metadataFormatList.add(mf);
         }
         return metadataFormatList;
@@ -144,12 +149,12 @@ public class JAXBConverter {
         // first handle possible exception
         handleOAIException(oaipmh);
         ListIdentifiersType listIdentifiersType = oaipmh.getListIdentifiers();
-        if(listIdentifiersType == null) {
+        if (listIdentifiersType == null) {
             throw new RuntimeException("ListIdentifiers is empty");
         }
         // create new list identifiers
         OAIDataList<Header> headerList = new OAIDataList<Header>();
-        for(HeaderType headerType : listIdentifiersType.getHeader()) {
+        for (HeaderType headerType : listIdentifiersType.getHeader()) {
             headerList.add(convertHeader(headerType));
         }
         ResumptionToken rsToken = convertResumptionToken(listIdentifiersType.getResumptionToken());
@@ -161,12 +166,12 @@ public class JAXBConverter {
         // first handle possible exception
         handleOAIException(oaipmh);
         ListRecordsType listRecordsType = oaipmh.getListRecords();
-        if(listRecordsType == null) {
+        if (listRecordsType == null) {
             throw new RuntimeException("ListRecords is empty");
         }
         // create new list identifiers
         OAIDataList<Record> recordList = new OAIDataList<Record>();
-        for(RecordType recordType : listRecordsType.getRecord()) {
+        for (RecordType recordType : listRecordsType.getRecord()) {
             recordList.add(convertRecord(recordType));
         }
         ResumptionToken rsToken = convertResumptionToken(listRecordsType.getResumptionToken());
@@ -178,7 +183,7 @@ public class JAXBConverter {
         // first handle possible exception
         handleOAIException(oaipmh);
         GetRecordType recordType = oaipmh.getGetRecord();
-        if(recordType == null) {
+        if (recordType == null) {
             throw new RuntimeException("GetRecord is empty");
         }
         // create new record
@@ -187,10 +192,10 @@ public class JAXBConverter {
 
     private Header convertHeader(HeaderType headerType) {
         Header header = new Header(headerType.getIdentifier(), headerType.getDatestamp());
-        if(headerType.getStatus() != null && headerType.getStatus().equals(StatusType.DELETED)) {
+        if (headerType.getStatus() != null && headerType.getStatus().equals(StatusType.DELETED)) {
             header.setDeleted(true);
         }
-        for(String spec : headerType.getSetSpec()) {
+        for (String spec : headerType.getSetSpec()) {
             header.getSetList().add(new Set(spec));
         }
         return header;
@@ -199,14 +204,14 @@ public class JAXBConverter {
     private Record convertRecord(RecordType recordType) {
         Header header = convertHeader(recordType.getHeader());
         Record record = new Record(header);
-        if(recordType.getMetadata() != null) {
-            Element domElement = (Element)recordType.getMetadata().getAny();
-            if(domElement != null) {
+        if (recordType.getMetadata() != null) {
+            Element domElement = (Element) recordType.getMetadata().getAny();
+            if (domElement != null) {
                 record.setMetadata(new SimpleMetadata(OAIUtils.domToJDOM(domElement)));
             }
         }
-        for(AboutType aboutType : recordType.getAbout()) {
-            Element domElement = (Element)aboutType.getAny();
+        for (AboutType aboutType : recordType.getAbout()) {
+            Element domElement = (Element) aboutType.getAny();
             record.getAboutList().add(OAIUtils.domToJDOM(domElement));
         }
         return record;
@@ -214,10 +219,15 @@ public class JAXBConverter {
 
     private List<Description> convertDescriptionList(List<DescriptionType> descriptionTypeList) {
         List<Description> descriptionList = new ArrayList<Description>();
-        for(DescriptionType descType : descriptionTypeList) {
-            Element domElement = (Element)descType.getAny();
+        for (DescriptionType descType : descriptionTypeList) {
+            Element domElement = (Element) descType.getAny();
             String name = domElement.getLocalName();
             Description description = this.config.createNewDescriptionInstance(name);
+            if (description == null) {
+                LOGGER.warn("Unable to find matching description for '" + name
+                    + "'. Use HarvesterConfig#registerDescription() to add one.");
+                continue;
+            }
             description.fromXML(OAIUtils.domToJDOM(domElement));
             descriptionList.add(description);
         }
@@ -225,7 +235,7 @@ public class JAXBConverter {
     }
 
     private ResumptionToken convertResumptionToken(ResumptionTokenType rsTokenType) {
-        if(rsTokenType == null) {
+        if (rsTokenType == null) {
             return null;
         }
         DefaultResumptionToken rsToken = new DefaultResumptionToken();
