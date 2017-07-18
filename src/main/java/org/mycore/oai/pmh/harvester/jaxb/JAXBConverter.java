@@ -239,14 +239,14 @@ public class JAXBConverter {
             return null;
         }
         DefaultResumptionToken rsToken = new DefaultResumptionToken();
-        rsToken.setToken(rsTokenType.getValue());
-        if(rsTokenType.getCompleteListSize() != null) {
+        rsToken.setToken("".equals(rsTokenType.getValue()) ? null : rsTokenType.getValue());
+        if (rsTokenType.getCompleteListSize() != null) {
             rsToken.setCompleteListSize(rsTokenType.getCompleteListSize().intValue());
         }
-        if(rsTokenType.getCursor() != null) {
+        if (rsTokenType.getCursor() != null) {
             rsToken.setCursor(rsTokenType.getCursor().intValue());
         }
-        if(rsTokenType.getExpirationDate() != null) {
+        if (rsTokenType.getExpirationDate() != null) {
             rsToken.setExpirationDate(rsTokenType.getExpirationDate());
         }
         return rsToken;
