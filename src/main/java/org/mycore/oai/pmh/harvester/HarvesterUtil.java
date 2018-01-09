@@ -30,7 +30,7 @@ public abstract class HarvesterUtil {
      * @param metadataPrefix
      *            (required) Specifies that records should be returned only if the metadata format matching the supplied metadataPrefix is available or,
      *            depending on the repository's support for deletions, has been deleted. The metadata formats supported by a repository and for a particular
-     *            item can be retrieved using the {@link #listMetadataFormats} method. Optional parameters should be set to <code>null</code> if you don't want
+     *            item can be retrieved using the {@link Harvester#listMetadataFormats()} method. Optional parameters should be set to <code>null</code> if you don't want
      *            to use them.
      * @param from
      *            (optional) A UTCdatetime value, which specifies a lower bound for datestamp-based selective harvesting.
@@ -55,7 +55,7 @@ public abstract class HarvesterUtil {
      * @param metadataPrefix
      *            (required) Specifies that headers should be returned only if the metadata format matching the supplied metadataPrefix is available or,
      *            depending on the repository's support for deletions, has been deleted. The metadata formats supported by a repository and for a particular
-     *            item can be retrieved using the {@link #listMetadataFormats} method. Optional parameters should be set to <code>null</code> if you don't want
+     *            item can be retrieved using the {@link Harvester#listMetadataFormats()} method. Optional parameters should be set to <code>null</code> if you don't want
      *            to use them.
      * @param from
      *            (optional) A UTCdatetime value, which specifies a lower bound for datestamp-based selective harvesting.
