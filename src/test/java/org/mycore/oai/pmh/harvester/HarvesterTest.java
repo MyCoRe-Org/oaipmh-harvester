@@ -1,8 +1,8 @@
 package org.mycore.oai.pmh.harvester;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 
 import java.util.List;
 
@@ -17,15 +17,17 @@ import org.mycore.oai.pmh.Set;
 
 public class HarvesterTest {
 
-    private static String TEST_URL = "https://memory.loc.gov/cgi-bin/oai2_0";
+    private static String TEST_URL = "http://tubdok.tub.tuhh.de/oai/request";
+
+    private static String TEST_SET = "open_access";
 
     @Test
     public void identify() throws Exception {
         Harvester harvester = HarvesterBuilder.createNewInstance(TEST_URL);
         Identify identify = harvester.identify();
-        assertEquals("repository name differs", "Library of Congress Open Archive Initiative Repository 1",
+        assertEquals("repository name differs", "tub.dok",
             identify.getRepositoryName());
-        assertEquals("deletion record policy should be 'No'", "No", identify.getDeletedRecordPolicy().name());
+        assertEquals("deletion record policy should be 'No'", "Transient", identify.getDeletedRecordPolicy().name());
     }
 
     @Test
@@ -45,7 +47,7 @@ public class HarvesterTest {
     @Test
     public void listHeaders() throws Exception {
         Harvester harvester = HarvesterBuilder.createNewInstance(TEST_URL);
-        OAIDataList<Header> headerList = harvester.listIdentifiers("oai_dc", null, null, "drwg");
+        OAIDataList<Header> headerList = harvester.listIdentifiers("oai_dc", null, null, TEST_SET);
         assertFalse("headers should not be empty", headerList.isEmpty());
         ResumptionToken rsToken = headerList.getResumptionToken();
         assertNotNull("there should be an resumption token", rsToken);
@@ -56,7 +58,7 @@ public class HarvesterTest {
     @Test
     public void listRecords() throws Exception {
         Harvester harvester = HarvesterBuilder.createNewInstance(TEST_URL);
-        OAIDataList<Record> recordList = harvester.listRecords("oai_dc", null, null, "drwg");
+        OAIDataList<Record> recordList = harvester.listRecords("oai_dc", null, null, TEST_SET);
         assertFalse("records should not be empty", recordList.isEmpty());
         ResumptionToken rsToken = recordList.getResumptionToken();
         assertNotNull("there should be an resumption token", rsToken);
@@ -67,7 +69,7 @@ public class HarvesterTest {
     @Test
     public void getRecord() throws Exception {
         Harvester harvester = HarvesterBuilder.createNewInstance(TEST_URL);
-        Record record = harvester.getRecord("oai:lcoa1.loc.gov:loc.gmd/g3791p.rr002300", "oai_dc");
+        Record record = harvester.getRecord("oai:tubdok.tub.tuhh.de:11420/7", "oai_dc");
         assertNotNull("the record should exist", record);
     }
 
