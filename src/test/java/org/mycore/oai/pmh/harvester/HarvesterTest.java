@@ -17,17 +17,17 @@ import org.mycore.oai.pmh.Set;
 
 public class HarvesterTest {
 
-    private static String TEST_URL = "http://tubdok.tub.tuhh.de/oai/request";
+    private static String TEST_URL = "https://zs.thulb.uni-jena.de/oai2";
 
-    private static String TEST_SET = "open_access";
+    private static String TEST_SET = "journal-type:parliamentDocuments";
 
     @Test
-    public void identify() throws Exception {
+    public void identify() {
         Harvester harvester = HarvesterBuilder.createNewInstance(TEST_URL);
         Identify identify = harvester.identify();
-        assertEquals("repository name differs", "tub.dok",
+        assertEquals("repository name differs", "JPortal",
             identify.getRepositoryName());
-        assertEquals("deletion record policy should be 'No'", "Transient", identify.getDeletedRecordPolicy().name());
+        assertEquals("deletion record policy should be 'No'", "Persistent", identify.getDeletedRecordPolicy().name());
     }
 
     @Test
@@ -38,7 +38,7 @@ public class HarvesterTest {
     }
 
     @Test
-    public void listMetadataFormats() throws Exception {
+    public void listMetadataFormats() {
         Harvester harvester = HarvesterBuilder.createNewInstance(TEST_URL);
         List<MetadataFormat> mfList = harvester.listMetadataFormats();
         assertFalse("metadata format list should not be empty", mfList.isEmpty());
@@ -69,7 +69,7 @@ public class HarvesterTest {
     @Test
     public void getRecord() throws Exception {
         Harvester harvester = HarvesterBuilder.createNewInstance(TEST_URL);
-        Record record = harvester.getRecord("oai:tubdok.tub.tuhh.de:11420/7", "oai_dc");
+        Record record = harvester.getRecord("oai:zs.thulb.uni-jena.de:jportal_jparticle_00000001", "oai_dc");
         assertNotNull("the record should exist", record);
     }
 
