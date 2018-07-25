@@ -35,7 +35,7 @@ public interface Harvester {
      * @throws HarvestException
      *             General exception that something went wrong. Most likely an HTTP error occurred.
      */
-    public Identify identify() throws HarvestException;
+    Identify identify() throws HarvestException;
 
     /**
      * Retrieve the set structure of the repository.
@@ -46,7 +46,7 @@ public interface Harvester {
      * @throws HarvestException
      *             General exception that something went wrong. Most likely an HTTP error occurred.
      */
-    public OAIDataList<Set> listSets() throws NoSetHierarchyException, HarvestException;
+    OAIDataList<Set> listSets() throws NoSetHierarchyException, HarvestException;
 
     /**
      * Retrieve the set structure of the repository.
@@ -61,7 +61,8 @@ public interface Harvester {
      * @throws HarvestException
      *             General exception that something went wrong. Most likely an HTTP error occurred.
      */
-    public OAIDataList<Set> listSets(String resumptionToken) throws NoSetHierarchyException, BadResumptionTokenException, HarvestException;
+    OAIDataList<Set> listSets(String resumptionToken)
+        throws NoSetHierarchyException, BadResumptionTokenException, HarvestException;
 
     /**
      * Retrieve the metadata formats available from the repository.
@@ -70,7 +71,7 @@ public interface Harvester {
      * @throws HarvestException
      *             General exception that something went wrong. Most likely an HTTP error occurred.
      */
-    public List<MetadataFormat> listMetadataFormats() throws HarvestException;
+    List<MetadataFormat> listMetadataFormats() throws HarvestException;
 
     /**
      * Retrieve the metadata formats available from the repository for a specific item.
@@ -86,8 +87,9 @@ public interface Harvester {
      * @throws HarvestException
      *             General exception that something went wrong. Most likely an HTTP error occurred.
      */
-    public List<MetadataFormat> listMetadataFormats(String identifier) throws IdDoesNotExistException, NoMetadataFormatsException,
-    HarvestException;
+    List<MetadataFormat> listMetadataFormats(String identifier)
+        throws IdDoesNotExistException, NoMetadataFormatsException,
+        HarvestException;
 
     /**
      * Retrieve a bunch of headers. In difference to listRecords no metadata is contained.
@@ -115,8 +117,9 @@ public interface Harvester {
      * @throws HarvestException
      *             General exception that something went wrong. Most likely an HTTP error occurred.
      */
-    public OAIDataList<Header> listIdentifiers(String metadataPrefix, String from, String until, String setSpec)
-            throws BadArgumentException, CannotDisseminateFormatException, NoRecordsMatchException, NoSetHierarchyException, HarvestException;
+    OAIDataList<Header> listIdentifiers(String metadataPrefix, String from, String until, String setSpec)
+        throws BadArgumentException, CannotDisseminateFormatException, NoRecordsMatchException, NoSetHierarchyException,
+        HarvestException;
 
     /**
      * Retrieve a bunch of headers. In difference to listRecords no metadata is contained.
@@ -129,8 +132,8 @@ public interface Harvester {
      * @throws HarvestException
      *             General exception that something went wrong. Most likely an HTTP error occurred.
      */
-    public OAIDataList<Header> listIdentifiers(String resumptionToken) throws BadResumptionTokenException,
-    HarvestException;
+    OAIDataList<Header> listIdentifiers(String resumptionToken) throws BadResumptionTokenException,
+        HarvestException;
 
     /**
      * Retrieve a bunch of records.
@@ -158,8 +161,9 @@ public interface Harvester {
      * @throws HarvestException
      *             General exception that something went wrong. Most likely an HTTP error occurred.
      */
-    public OAIDataList<Record> listRecords(String metadataPrefix, String from, String until, String setSpec) throws BadArgumentException,
-            CannotDisseminateFormatException, NoRecordsMatchException, NoSetHierarchyException, HarvestException;
+    OAIDataList<Record> listRecords(String metadataPrefix, String from, String until, String setSpec)
+        throws BadArgumentException,
+        CannotDisseminateFormatException, NoRecordsMatchException, NoSetHierarchyException, HarvestException;
 
     /**
      * Retrieve a bunch of records.
@@ -172,7 +176,7 @@ public interface Harvester {
      * @throws HarvestException
      *             General exception that something went wrong. Most likely an HTTP error occurred.
      */
-    public OAIDataList<Record> listRecords(String resumptionToken) throws BadResumptionTokenException, HarvestException;
+    OAIDataList<Record> listRecords(String resumptionToken) throws BadResumptionTokenException, HarvestException;
 
     /**
      * Retrieve an individual metadata record from the repository.
@@ -191,7 +195,7 @@ public interface Harvester {
      * @throws HarvestException
      *             General exception that something went wrong. Most likely an HTTP error occurred.
      */
-    public Record getRecord(String identifier, String metadataPrefix) throws CannotDisseminateFormatException,
-            IdDoesNotExistException, HarvestException;
+    Record getRecord(String identifier, String metadataPrefix) throws CannotDisseminateFormatException,
+        IdDoesNotExistException, HarvestException;
 
 }

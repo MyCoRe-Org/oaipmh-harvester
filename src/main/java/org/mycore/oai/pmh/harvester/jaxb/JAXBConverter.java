@@ -28,6 +28,7 @@ import org.mycore.oai.pmh.ResumptionToken;
 import org.mycore.oai.pmh.Set;
 import org.mycore.oai.pmh.SimpleIdentify;
 import org.mycore.oai.pmh.SimpleMetadata;
+import org.mycore.oai.pmh.harvester.HarvestException;
 import org.mycore.oai.pmh.harvester.HarvesterConfig;
 import org.openarchives.oai.pmh.AboutType;
 import org.openarchives.oai.pmh.DescriptionType;
@@ -50,7 +51,7 @@ import org.w3c.dom.Element;
 
 public class JAXBConverter {
 
-    private static Logger LOGGER = LogManager.getLogger(JAXBConverter.class);
+    private static Logger LOGGER = LogManager.getLogger();
 
     private HarvesterConfig config;
 
@@ -79,11 +80,11 @@ public class JAXBConverter {
         } else if (OAIPMHerrorcodeType.NO_METADATA_FORMATS.equals(errorCode)) {
             throw new NoMetadataFormatsException().setMessage(msg);
         } else if (OAIPMHerrorcodeType.NO_RECORDS_MATCH.equals(errorCode)) {
-            throw new NoRecordsMatchException().setMessage(msg);
+            throw new NoRecordsMatchException(msg);
         } else if (OAIPMHerrorcodeType.NO_SET_HIERARCHY.equals(errorCode)) {
             throw new NoSetHierarchyException().setMessage(msg);
         }
-        throw new RuntimeException("Unknown oai exception occur: " + msg);
+        throw new HarvestException("Unknown oai exception occur: " + msg);
     }
 
     public Identify convertIdentify(OAIPMHtype oaipmh) throws OAIException {
@@ -91,7 +92,7 @@ public class JAXBConverter {
         handleOAIException(oaipmh);
         IdentifyType idType = oaipmh.getIdentify();
         if (idType == null) {
-            throw new RuntimeException("Identify is empty");
+            throw new HarvestException("Identify is empty");
         }
         // create new identify
         SimpleIdentify id = new SimpleIdentify();
@@ -114,10 +115,10 @@ public class JAXBConverter {
         handleOAIException(oaipmh);
         ListSetsType listSetsType = oaipmh.getListSets();
         if (listSetsType == null) {
-            throw new RuntimeException("ListSets is empty");
+            throw new HarvestException("ListSets is empty");
         }
         // create new list sets
-        OAIDataList<Set> setList = new OAIDataList<Set>();
+        OAIDataList<Set> setList = new OAIDataList<>();
         for (SetType setType : listSetsType.getSet()) {
             Set set = new Set(setType.getSetSpec(), setType.getSetName());
             set.getDescription().addAll(convertDescriptionList(setType.getSetDescription()));
@@ -133,10 +134,10 @@ public class JAXBConverter {
         handleOAIException(oaipmh);
         ListMetadataFormatsType listMetadataFormatsType = oaipmh.getListMetadataFormats();
         if (listMetadataFormatsType == null) {
-            throw new RuntimeException("ListMetadataFormats is empty");
+            throw new HarvestException("ListMetadataFormats is empty");
         }
         // create new list metadata formats
-        List<MetadataFormat> metadataFormatList = new ArrayList<MetadataFormat>();
+        List<MetadataFormat> metadataFormatList = new ArrayList<>();
         for (MetadataFormatType mft : listMetadataFormatsType.getMetadataFormat()) {
             MetadataFormat mf = new MetadataFormat(mft.getMetadataPrefix(), mft.getMetadataNamespace(),
                 mft.getSchema());
@@ -150,10 +151,10 @@ public class JAXBConverter {
         handleOAIException(oaipmh);
         ListIdentifiersType listIdentifiersType = oaipmh.getListIdentifiers();
         if (listIdentifiersType == null) {
-            throw new RuntimeException("ListIdentifiers is empty");
+            throw new HarvestException("ListIdentifiers is empty");
         }
         // create new list identifiers
-        OAIDataList<Header> headerList = new OAIDataList<Header>();
+        OAIDataList<Header> headerList = new OAIDataList<>();
         for (HeaderType headerType : listIdentifiersType.getHeader()) {
             headerList.add(convertHeader(headerType));
         }
@@ -167,10 +168,10 @@ public class JAXBConverter {
         handleOAIException(oaipmh);
         ListRecordsType listRecordsType = oaipmh.getListRecords();
         if (listRecordsType == null) {
-            throw new RuntimeException("ListRecords is empty");
+            throw new HarvestException("ListRecords is empty");
         }
         // create new list identifiers
-        OAIDataList<Record> recordList = new OAIDataList<Record>();
+        OAIDataList<Record> recordList = new OAIDataList<>();
         for (RecordType recordType : listRecordsType.getRecord()) {
             recordList.add(convertRecord(recordType));
         }
@@ -184,7 +185,7 @@ public class JAXBConverter {
         handleOAIException(oaipmh);
         GetRecordType recordType = oaipmh.getGetRecord();
         if (recordType == null) {
-            throw new RuntimeException("GetRecord is empty");
+            throw new HarvestException("GetRecord is empty");
         }
         // create new record
         return convertRecord(recordType.getRecord());
@@ -218,14 +219,15 @@ public class JAXBConverter {
     }
 
     private List<Description> convertDescriptionList(List<DescriptionType> descriptionTypeList) {
-        List<Description> descriptionList = new ArrayList<Description>();
+        List<Description> descriptionList = new ArrayList<>();
         for (DescriptionType descType : descriptionTypeList) {
             Element domElement = (Element) descType.getAny();
             String name = domElement.getLocalName();
             Description description = this.config.createNewDescriptionInstance(name);
             if (description == null) {
-                LOGGER.warn("Unable to find matching description for '" + name
-                    + "'. Use HarvesterConfig#registerDescription() to add one.");
+                LOGGER.warn(
+                    "Unable to find matching description for '{}'. Use HarvesterConfig#registerDescription() to add one.",
+                    name);
                 continue;
             }
             description.fromXML(OAIUtils.domToJDOM(domElement));
@@ -251,4 +253,5 @@ public class JAXBConverter {
         }
         return rsToken;
     }
+
 }

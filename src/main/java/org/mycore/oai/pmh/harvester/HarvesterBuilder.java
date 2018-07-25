@@ -49,17 +49,18 @@ public abstract class HarvesterBuilder {
      */
     public static Harvester createNewInstance(String baseURL, HarvesterConfig config) {
         try {
-            Constructor<? extends Harvester> constructor = harvesterClass.getConstructor(String.class, HarvesterConfig.class);
+            Constructor<? extends Harvester> constructor = harvesterClass.getConstructor(String.class,
+                HarvesterConfig.class);
             return constructor.newInstance(baseURL, config);
         } catch (Exception exc) {
-            throw new RuntimeException("while creating harvester", exc);
+            throw new HarvestException("while creating harvester", exc);
         }
     }
 
     /**
      * Set your own harvester implementation.
      * 
-     * @param harvesterClass
+     * @param harvesterClass the harvester class to set
      */
     public static void setHarvesterClass(Class<? extends Harvester> harvesterClass) {
         HarvesterBuilder.harvesterClass = harvesterClass;

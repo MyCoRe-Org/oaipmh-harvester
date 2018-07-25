@@ -26,6 +26,7 @@ import org.mycore.oai.pmh.OAIException;
 import org.mycore.oai.pmh.Record;
 import org.mycore.oai.pmh.Set;
 import org.mycore.oai.pmh.harvester.DataProviderConnection;
+import org.mycore.oai.pmh.harvester.HarvestException;
 import org.mycore.oai.pmh.harvester.Harvester;
 import org.mycore.oai.pmh.harvester.HarvesterConfig;
 import org.openarchives.oai.pmh.OAIPMHtype;
@@ -37,7 +38,7 @@ import org.openarchives.oai.pmh.OAIPMHtype;
  */
 public class JAXBHarvester implements Harvester {
 
-    private static Logger LOGGER = LogManager.getLogger(JAXBHarvester.class);
+    private static Logger LOGGER = LogManager.getLogger();
 
     private String baseURL;
 
@@ -57,12 +58,11 @@ public class JAXBHarvester implements Harvester {
             Unmarshaller um = jaxbContext.createUnmarshaller();
             return ((JAXBElement<OAIPMHtype>) um.unmarshal(is)).getValue();
         } catch (JAXBException jaxbExc) {
-            LOGGER.error("while unmarshalling inputstream", jaxbExc);
-            throw new RuntimeException("TODO: use better rt exception");
+            throw new HarvestException("while unmarshalling inputstream", jaxbExc);
         } finally {
             try {
                 is.close();
-            } catch(IOException ioExc) {
+            } catch (IOException ioExc) {
                 LOGGER.error("while unmarshalling inputstream", ioExc);
             }
         }
@@ -76,7 +76,7 @@ public class JAXBHarvester implements Harvester {
         try {
             return converter.convertIdentify(oaipmh);
         } catch (OAIException e) {
-            throw new RuntimeException("Unexcpected exception occur", e);
+            throw new HarvestException("Unexpected exception occur", e);
         }
     }
 
@@ -85,13 +85,13 @@ public class JAXBHarvester implements Harvester {
         try {
             return this.listSets(null);
         } catch (BadResumptionTokenException exc) {
-            throw new RuntimeException("Unexcpected bad resumption token exception occur", exc);
+            throw new HarvestException("Unexpected bad resumption token exception occur", exc);
         }
     }
 
     @Override
     public OAIDataList<Set> listSets(String resumptionToken) throws NoSetHierarchyException,
-            BadResumptionTokenException {
+        BadResumptionTokenException {
         DataProviderConnection dp = new DataProviderConnection(this.baseURL);
         OAIPMHtype oaipmh = unmarshall(dp.listSets(resumptionToken));
         JAXBConverter converter = new JAXBConverter(this.config);
@@ -100,7 +100,7 @@ public class JAXBHarvester implements Harvester {
         } catch (BadResumptionTokenException | NoSetHierarchyException e) {
             throw e;
         } catch (OAIException e) {
-            throw new RuntimeException("Unexcpected exception occur", e);
+            throw new HarvestException("Unexpected exception occur", e);
         }
     }
 
@@ -108,14 +108,14 @@ public class JAXBHarvester implements Harvester {
     public List<MetadataFormat> listMetadataFormats() {
         try {
             return this.listMetadataFormats(null);
-        } catch (IdDoesNotExistException | NoMetadataFormatsException e) {
-            throw new RuntimeException("Unexcpected exception occur", e);
+        } catch (OAIException e) {
+            throw new HarvestException("Unexpected exception occur", e);
         }
     }
 
     @Override
     public List<MetadataFormat> listMetadataFormats(String identifier) throws IdDoesNotExistException,
-            NoMetadataFormatsException {
+        NoMetadataFormatsException {
         DataProviderConnection dp = new DataProviderConnection(this.baseURL);
         OAIPMHtype oaipmh = unmarshall(dp.listMetadataFormats(identifier));
         JAXBConverter converter = new JAXBConverter(this.config);
@@ -124,22 +124,24 @@ public class JAXBHarvester implements Harvester {
         } catch (IdDoesNotExistException | NoMetadataFormatsException e) {
             throw e;
         } catch (OAIException e) {
-            throw new RuntimeException("Unexcpected exception occur", e);
+            throw new HarvestException("Unexpected exception occur", e);
         }
     }
 
     @Override
     public OAIDataList<Header> listIdentifiers(String metadataPrefix, String from, String until, String setSpec)
-            throws BadArgumentException, CannotDisseminateFormatException, NoRecordsMatchException, NoSetHierarchyException {
+        throws BadArgumentException, CannotDisseminateFormatException, NoRecordsMatchException,
+        NoSetHierarchyException {
         DataProviderConnection dp = new DataProviderConnection(this.baseURL);
         OAIPMHtype oaipmh = unmarshall(dp.listIdentifiers(metadataPrefix, from, until, setSpec));
         JAXBConverter converter = new JAXBConverter(this.config);
         try {
             return converter.convertListIdentifiers(oaipmh);
-        } catch (BadArgumentException | CannotDisseminateFormatException | NoRecordsMatchException | NoSetHierarchyException e) {
+        } catch (BadArgumentException | CannotDisseminateFormatException | NoRecordsMatchException
+            | NoSetHierarchyException e) {
             throw e;
         } catch (OAIException e) {
-            throw new RuntimeException("Unexcpected exception occur", e);
+            throw new HarvestException("Unexpected exception occur", e);
         }
     }
 
@@ -153,22 +155,24 @@ public class JAXBHarvester implements Harvester {
         } catch (BadResumptionTokenException e) {
             throw e;
         } catch (OAIException e) {
-            throw new RuntimeException("Unexcpected exception occur", e);
+            throw new HarvestException("Unexpected exception occur", e);
         }
     }
 
     @Override
-    public OAIDataList<Record> listRecords(String metadataPrefix, String from, String until, String setSpec) throws BadArgumentException,
-            CannotDisseminateFormatException, NoRecordsMatchException, NoSetHierarchyException {
+    public OAIDataList<Record> listRecords(String metadataPrefix, String from, String until, String setSpec)
+        throws BadArgumentException,
+        CannotDisseminateFormatException, NoRecordsMatchException, NoSetHierarchyException {
         DataProviderConnection dp = new DataProviderConnection(this.baseURL);
         OAIPMHtype oaipmh = unmarshall(dp.listRecords(metadataPrefix, from, until, setSpec));
         JAXBConverter converter = new JAXBConverter(this.config);
         try {
             return converter.convertListRecords(oaipmh);
-        } catch (BadArgumentException | CannotDisseminateFormatException | NoRecordsMatchException | NoSetHierarchyException e) {
+        } catch (BadArgumentException | CannotDisseminateFormatException | NoRecordsMatchException
+            | NoSetHierarchyException e) {
             throw e;
         } catch (OAIException e) {
-            throw new RuntimeException("Unexcpected exception occur", e);
+            throw new HarvestException("Unexpected exception occur", e);
         }
     }
 
@@ -182,13 +186,13 @@ public class JAXBHarvester implements Harvester {
         } catch (BadResumptionTokenException e) {
             throw e;
         } catch (OAIException e) {
-            throw new RuntimeException("Unexcpected exception occur", e);
+            throw new HarvestException("Unexpected exception occur", e);
         }
     }
 
     @Override
     public Record getRecord(String identifier, String metadataPrefix) throws CannotDisseminateFormatException,
-            IdDoesNotExistException {
+        IdDoesNotExistException {
         DataProviderConnection dp = new DataProviderConnection(this.baseURL);
         OAIPMHtype oaipmh = unmarshall(dp.getRecord(identifier, metadataPrefix));
         JAXBConverter converter = new JAXBConverter(this.config);
@@ -197,7 +201,7 @@ public class JAXBHarvester implements Harvester {
         } catch (CannotDisseminateFormatException | IdDoesNotExistException e) {
             throw e;
         } catch (OAIException e) {
-            throw new RuntimeException("Unexcpected exception occur", e);
+            throw new HarvestException("Unexpected exception occur", e);
         }
     }
 

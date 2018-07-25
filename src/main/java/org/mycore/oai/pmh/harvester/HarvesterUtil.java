@@ -46,7 +46,7 @@ public abstract class HarvesterUtil {
     public static Stream<Record> streamRecords(Harvester harvester, String metadataPrefix, String from, String until,
         String setSpec) throws HarvestException {
         RecordSupplier supplier = new RecordSupplier(harvester, metadataPrefix, from, until, setSpec);
-        return StreamSupport.stream(new OAISpliterator<Record>(supplier), false);
+        return StreamSupport.stream(new OAISpliterator<>(supplier), false);
     }
 
     /**
@@ -71,7 +71,7 @@ public abstract class HarvesterUtil {
     public static Stream<Header> streamHeaders(Harvester harvester, String metadataPrefix, String from, String until,
         String setSpec) throws HarvestException {
         IdentifiersSupplier supplier = new IdentifiersSupplier(harvester, metadataPrefix, from, until, setSpec);
-        return StreamSupport.stream(new OAISpliterator<Header>(supplier), false);
+        return StreamSupport.stream(new OAISpliterator<>(supplier), false);
     }
 
     /**
@@ -106,15 +106,13 @@ public abstract class HarvesterUtil {
         @Override
         public void forEachRemaining(Consumer<? super T> action) {
             if (action == null) {
-                throw new NullPointerException();
+                throw new IllegalArgumentException("action should not be null");
             }
             try {
                 // use an iterative and not recursive approach
                 OAIDataList<T> dataList = this.supplier.list();
                 while (dataList != null) {
-                    dataList.forEach(record -> {
-                        action.accept(record);
-                    });
+                    dataList.forEach(action::accept);
                     dataList = dataList.isResumptionTokenSet() ? this.supplier.list(dataList.getResumptionToken())
                         : null;
                 }
@@ -140,11 +138,11 @@ public abstract class HarvesterUtil {
 
     }
 
-    private static interface OAIDataSupplier<T> {
+    private interface OAIDataSupplier<T> {
 
-        public OAIDataList<T> list() throws OAIException;
+        OAIDataList<T> list() throws OAIException;
 
-        public OAIDataList<T> list(ResumptionToken resumptionToken) throws OAIException;
+        OAIDataList<T> list(ResumptionToken resumptionToken) throws OAIException;
 
     }
 

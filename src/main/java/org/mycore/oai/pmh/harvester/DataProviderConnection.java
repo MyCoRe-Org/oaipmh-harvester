@@ -114,10 +114,10 @@ public class DataProviderConnection {
     protected InputStream doRequest(String requestString) throws HarvestException {
         URL requestURL = buildRequestURL(requestString);
         // open connection
-        HttpURLConnection con = null;
+        HttpURLConnection con;
         try {
             con = (HttpURLConnection) requestURL.openConnection();
-            setRequestProperties(requestURL, con);
+            setRequestProperties(con);
             // get response code
             int responseCode = con.getResponseCode();
             if (responseCode != HttpURLConnection.HTTP_OK) {
@@ -133,7 +133,7 @@ public class DataProviderConnection {
 
     private URL buildRequestURL(String requestString) {
         try {
-            LOGGER.info("Request " + requestString);
+            LOGGER.info("Request {}", requestString);
             return new URL(requestString);
         } catch (Exception exc) {
             throw new HarvestException("Unable to request " + requestString, exc);
@@ -160,10 +160,10 @@ public class DataProviderConnection {
         }
     }
 
-    private void setRequestProperties(URL requestURL, HttpURLConnection con) {
+    private void setRequestProperties(HttpURLConnection con) {
         // set request properties
         con.setRequestProperty("User-Agent", "OAIHarvester/2.0");
-        StringBuffer encodingBuf = new StringBuffer();
+        StringBuilder encodingBuf = new StringBuilder();
         for (int i = 0; i < Encoding.values().length; i++) {
             encodingBuf.append(Encoding.values()[i]);
             if (i < Encoding.values().length)
